@@ -32,7 +32,7 @@ void create_branch(Vector2 origin, int child_gens, int splits, float direction,
 
   if (child_gens > 0) {
     for (int i = 0; i < splits; i++) {
-      float new_dir = direction - spread +
+      float new_dir = splits == 1 ? direction : direction - spread +
                       (lerp(0, spread * 2, (float)i / (float)(splits - 1)));
       create_branch(end_position, child_gens - 1, splits, new_dir,
                     length * length_decay, spread, length_decay, sway);
