@@ -21,4 +21,4 @@ To make cross-compilation painless, I'm using clang here. I wrote a little scrip
 I have published some of these to my website, they run on your browser, so you don't need to compile them yourself.
 
 - [branch](https://racc.at/games/branch)
-- [tree](https://racc.at/games/branch)
+- [tree](https://racc.at/games/tree)
