@@ -3,11 +3,10 @@
 #include <stdio.h>
 
 static float time = 0;
-static int draw_count = 0;
 
 typedef enum {
-  INT,
-  FASTINT,
+  UINT,
+  FASTUINT,
   FLOAT,
   FASTFLOAT,
   ANGLE,
@@ -23,6 +22,14 @@ static int menu_position = 0;
 
 float lerp(float a, float b, float t) { return a + (b - a) * t; }
 
+int predicted_line_count(int child_gens, int splits) {
+  int result = 0;
+  for (int i = 0; i <= child_gens; i++) {
+    result += pow(splits, i);
+  }
+  return result;
+}
+
 void create_branch(Vector2 origin, int child_gens, int splits, float direction,
                    float length, float spread, float length_decay, float sway) {
   direction += sin(time + (child_gens)) * sway;
@@ -31,7 +38,6 @@ void create_branch(Vector2 origin, int child_gens, int splits, float direction,
       .y = origin.y + sin(direction) * length,
   };
   DrawLineV(origin, end_position, WHITE);
-  draw_count++;
 
   if (child_gens > 0) {
     for (int i = 0; i < splits; i++) {
@@ -81,20 +87,24 @@ void execute_menu_behavior(MenuItem menu[], int length) {
   }
 
   switch (menu[menu_position].hint) {
-  case INT:
+  case UINT:
     if (IsKeyPressed(KEY_LEFT) ||
         (mouse_v == -1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
-      *(int *)menu[menu_position].data -= 1;
+      if (*(int *)menu[menu_position].data > 0) {
+        *(int *)menu[menu_position].data -= 1;
+      }
     }
     if (IsKeyPressed(KEY_RIGHT) ||
         (mouse_v == 1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
       *(int *)menu[menu_position].data += 1;
     }
     break;
-  case FASTINT:
+  case FASTUINT:
     if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT) ||
         (mouse_v == -1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
-      *(int *)menu[menu_position].data -= 1;
+      if (*(int *)menu[menu_position].data > 0) {
+        *(int *)menu[menu_position].data -= 1;
+      }
     }
     if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT) ||
         (mouse_v == 1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
@@ -135,8 +145,8 @@ void execute_menu_behavior(MenuItem menu[], int length) {
 
   for (int i = 0; i < length; i++) {
     switch (menu[i].hint) {
-    case INT:
-    case FASTINT:
+    case UINT:
+    case FASTUINT:
       sprintf(menu[i].value, "%d", *(int *)menu[i].data);
       break;
     case FLOAT:
@@ -163,9 +173,9 @@ int main() {
   float sway = 0.05;
 
   MenuItem menu[] = {
-      {.text = "Child Generations", .hint = INT, .data = &child_gens},
-      {.text = "Splits", .hint = INT, .data = &splits},
-      {.text = "Length", .hint = FASTINT, .data = &length},
+      {.text = "Child Generations", .hint = UINT, .data = &child_gens},
+      {.text = "Splits", .hint = UINT, .data = &splits},
+      {.text = "Length", .hint = FASTUINT, .data = &length},
       {.text = "Decay", .hint = FASTFLOAT, .data = &decay},
       {.text = "Direction", .hint = ANGLE, .data = &direction},
       {.text = "Spread", .hint = ANGLE, .data = &spread},
@@ -177,7 +187,6 @@ int main() {
 
   while (!WindowShouldClose()) {
     BeginDrawing();
-    draw_count = 0;
     time += GetFrameTime();
     ClearBackground(BLACK);
     Vector2 origin = {
@@ -190,9 +199,9 @@ int main() {
     execute_menu_behavior(menu, menu_length);
     draw_menu(menu, menu_length);
 
-    char a[15];
-    sprintf(a, "Lines: %d", draw_count);
-    DrawText(a, 20, GetScreenHeight() - 40, 20, WHITE);
+    char e[25];
+    sprintf(e, "Line Count: %d", predicted_line_count(child_gens, splits));
+    DrawText(e, 20, GetScreenHeight() - 40, 20, WHITE);
 
     EndDrawing();
   }
