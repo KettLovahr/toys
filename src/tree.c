@@ -163,41 +163,13 @@ int main() {
   float sway = 0.05;
 
   MenuItem menu[] = {
-      {
-          .text = "Child Generations",
-          .hint = INT,
-          .data = &child_gens,
-      },
-      {
-          .text = "Splits",
-          .hint = INT,
-          .data = &splits,
-      },
-      {
-          .text = "Length",
-          .hint = FASTINT,
-          .data = &length,
-      },
-      {
-          .text = "Decay",
-          .hint = FASTFLOAT,
-          .data = &decay,
-      },
-      {
-          .text = "Direction",
-          .hint = ANGLE,
-          .data = &direction,
-      },
-      {
-          .text = "Spread",
-          .hint = ANGLE,
-          .data = &spread,
-      },
-      {
-          .text = "Sway",
-          .hint = FLOAT,
-          .data = &sway,
-      },
+      {.text = "Child Generations", .hint = INT, .data = &child_gens},
+      {.text = "Splits", .hint = INT, .data = &splits},
+      {.text = "Length", .hint = FASTINT, .data = &length},
+      {.text = "Decay", .hint = FASTFLOAT, .data = &decay},
+      {.text = "Direction", .hint = ANGLE, .data = &direction},
+      {.text = "Spread", .hint = ANGLE, .data = &spread},
+      {.text = "Sway", .hint = FLOAT, .data = &sway},
   };
   int menu_length = sizeof(menu) / sizeof(menu[0]);
 
