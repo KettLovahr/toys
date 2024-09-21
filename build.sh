@@ -2,6 +2,13 @@
 
 cd $(dirname $0) | exit
 
+list() {
+    echo "These are the projects you can pass to this script:"
+    for FILE in $(find src/ -iname "*.c"); do
+        echo "- $(echo "$FILE" | sed -e 's/.*\///' | sed -e 's/\.c//')"
+    done
+}
+
 build_linux() {
     if [ -f "src/$1.c" ]; then
         mkdir -p "exports/linux/$1"
@@ -69,4 +76,8 @@ if [[ $1 == "run-web" ]]; then
     cd "exports/web/$2"
     (sleep 1 && xdg-open "http://localhost:8000") &
     python3 -m http.server
+fi
+
+if [[ $1 == "list" ]]; then
+    list
 fi
