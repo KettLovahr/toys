@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 static float time = 0;
+static int draw_count = 0;
 
 typedef enum {
   INT,
@@ -29,6 +30,7 @@ void create_branch(Vector2 origin, int child_gens, int splits, float direction,
       .y = origin.y + sin(direction) * length,
   };
   DrawLineV(origin, end_position, WHITE);
+  draw_count++;
 
   if (child_gens > 0) {
     for (int i = 0; i < splits; i++) {
@@ -165,6 +167,7 @@ int main() {
 
   while (!WindowShouldClose()) {
     BeginDrawing();
+    draw_count = 0;
     time += GetFrameTime();
     ClearBackground(BLACK);
     Vector2 origin = {
@@ -176,6 +179,11 @@ int main() {
 
     execute_menu_behavior(menu, menu_length);
     draw_menu(menu, menu_length);
+
+    char a[15];
+    sprintf(a, "Lines: %d", draw_count);
+    DrawText(a, 20, GetScreenHeight() - 40, 20, WHITE);
+
     EndDrawing();
   }
 
