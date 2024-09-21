@@ -10,6 +10,7 @@ typedef enum {
   FASTINT,
   FLOAT,
   FASTFLOAT,
+  ANGLE,
 } MenuItemTypeHint;
 
 typedef struct {
@@ -34,8 +35,11 @@ void create_branch(Vector2 origin, int child_gens, int splits, float direction,
 
   if (child_gens > 0) {
     for (int i = 0; i < splits; i++) {
-      float new_dir = splits == 1 ? direction : direction - spread +
-                      (lerp(0, spread * 2, (float)i / (float)(splits - 1)));
+      float new_dir =
+          splits == 1
+              ? direction
+              : direction - spread +
+                    (lerp(0, spread * 2, (float)i / (float)(splits - 1)));
       create_branch(end_position, child_gens - 1, splits, new_dir,
                     length * length_decay, spread, length_decay, sway);
     }
@@ -96,6 +100,14 @@ void execute_menu_behavior(MenuItem menu[], int length) {
       *(float *)menu[menu_position].data += 0.01;
     }
     break;
+  case ANGLE:
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
+      *(float *)menu[menu_position].data -= 1 * DEG2RAD;
+    }
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
+      *(float *)menu[menu_position].data += 1 * DEG2RAD;
+    }
+    break;
   }
 
   for (int i = 0; i < length; i++) {
@@ -107,6 +119,9 @@ void execute_menu_behavior(MenuItem menu[], int length) {
     case FLOAT:
     case FASTFLOAT:
       sprintf(menu[i].value, "%.2f", *(float *)menu[i].data);
+      break;
+    case ANGLE:
+      sprintf(menu[i].value, "%.0f°", *(float *)menu[i].data * RAD2DEG);
       break;
     }
   }
@@ -136,24 +151,24 @@ int main() {
           .data = &splits,
       },
       {
-          .text = "Direction",
-          .hint = FASTFLOAT,
-          .data = &direction,
-      },
-      {
           .text = "Length",
           .hint = FASTINT,
           .data = &length,
       },
       {
-          .text = "Spread",
-          .hint = FASTFLOAT,
-          .data = &spread,
-      },
-      {
           .text = "Decay",
           .hint = FASTFLOAT,
           .data = &decay,
+      },
+      {
+          .text = "Direction",
+          .hint = ANGLE,
+          .data = &direction,
+      },
+      {
+          .text = "Spread",
+          .hint = ANGLE,
+          .data = &spread,
       },
       {
           .text = "Sway",
