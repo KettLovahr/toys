@@ -16,7 +16,7 @@ void update_wave(SineWave *wave, float rate) {
   wave->phase += rate * wave->phase_rate;
 }
 
-void draw_wave(SineWave wave[], int wave_count, float amp, float freq,
+void draw_waves(SineWave wave[], int wave_count, float amp, float freq,
                float phase) {
   int half_height = GetScreenHeight() / 2;
   int width = GetScreenWidth();
@@ -31,12 +31,12 @@ void draw_wave(SineWave wave[], int wave_count, float amp, float freq,
 }
 
 int main() {
-  SineWave wave[] = {
+  SineWave waves[] = {
       {
-          .amp = 0.5,
+          .amp = 0.3,
           .freq = 2 * PI,
           .phase = 0,
-          .phase_rate = 0.3,
+          .phase_rate = 0.55,
       },
       {
           .amp = 0.2,
@@ -62,6 +62,12 @@ int main() {
           .phase = 0,
           .phase_rate = -0.5,
       },
+      {
+          .amp = 0.35,
+          .freq = 3.3 * PI,
+          .phase = 0,
+          .phase_rate = -0.95,
+      },
   };
   float time = 0;
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -71,12 +77,12 @@ int main() {
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(BLACK);
-    int wave_count = sizeof(wave) / sizeof(wave[0]);
+    int wave_count = sizeof(waves) / sizeof(waves[0]);
     float delta = GetFrameTime();
     for (int i = 0; i < wave_count; i++) {
-      update_wave(&wave[i], delta);
+      update_wave(&waves[i], delta);
     }
-    draw_wave(wave, wave_count, 1.0, 2 * PI, time);
+    draw_waves(waves, wave_count, 1.0, 2 * PI, time);
     EndDrawing();
   }
 
