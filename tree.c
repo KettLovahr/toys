@@ -60,6 +60,19 @@ void draw_menu(MenuItem menu[], int length) {
 }
 
 void execute_menu_behavior(MenuItem menu[], int length) {
+  int mouse_v = 0;
+  Vector2 m = GetMousePosition();
+  for (int i = 0; i < length; i++) {
+    if (m.x > 0 && m.x < 330 && m.y > 20 + 20 * i && m.y < 20 + 20 * i + 20) {
+      if (m.x > 0 && m.x < 100) {
+        mouse_v = -1;
+      }
+      if (m.x > 230 && m.x < 330) {
+        mouse_v = +1;
+      }
+      menu_position = i;
+    }
+  }
   if (IsKeyPressed(KEY_UP)) {
     menu_position = menu_position == 0 ? (length - 1) : (menu_position - 1);
   }
@@ -69,42 +82,52 @@ void execute_menu_behavior(MenuItem menu[], int length) {
 
   switch (menu[menu_position].hint) {
   case INT:
-    if (IsKeyPressed(KEY_LEFT)) {
+    if (IsKeyPressed(KEY_LEFT) ||
+        (mouse_v == -1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
       *(int *)menu[menu_position].data -= 1;
     }
-    if (IsKeyPressed(KEY_RIGHT)) {
+    if (IsKeyPressed(KEY_RIGHT) ||
+        (mouse_v == 1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
       *(int *)menu[menu_position].data += 1;
     }
     break;
   case FASTINT:
-    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT) ||
+        (mouse_v == -1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
       *(int *)menu[menu_position].data -= 1;
     }
-    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT) ||
+        (mouse_v == 1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
       *(int *)menu[menu_position].data += 1;
     }
     break;
   case FLOAT:
-    if (IsKeyPressed(KEY_LEFT)) {
+    if (IsKeyPressed(KEY_LEFT) ||
+        (mouse_v == -1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
       *(float *)menu[menu_position].data -= 0.01;
     }
-    if (IsKeyPressed(KEY_RIGHT)) {
+    if (IsKeyPressed(KEY_RIGHT) ||
+        (mouse_v == 1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
       *(float *)menu[menu_position].data += 0.01;
     }
     break;
   case FASTFLOAT:
-    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT) ||
+        (mouse_v == -1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
       *(float *)menu[menu_position].data -= 0.01;
     }
-    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT) ||
+        (mouse_v == 1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
       *(float *)menu[menu_position].data += 0.01;
     }
     break;
   case ANGLE:
-    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT)) {
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT) ||
+        (mouse_v == -1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
       *(float *)menu[menu_position].data -= 1 * DEG2RAD;
     }
-    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT)) {
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT) ||
+        (mouse_v == 1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
       *(float *)menu[menu_position].data += 1 * DEG2RAD;
     }
     break;
