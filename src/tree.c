@@ -56,7 +56,7 @@ void create_branch(Vector2 origin, int child_gens, int splits, float direction,
               : direction - spread +
                     (lerp(0, spread * 2, (float)i / (float)(splits - 1)));
       create_branch(end_position, child_gens - 1, splits, new_dir,
-                    length * decay, spread, decay, sway, color_lerp(col, target_col, 1.0 / (child_gens + 1)), target_col);
+                    length * decay, spread, decay, sway, color_lerp(col, target_col, 1.0 / (child_gens)), target_col);
     }
   }
 }
