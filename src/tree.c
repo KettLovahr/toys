@@ -7,6 +7,7 @@ static float time = 0;
 typedef enum {
   UINT,
   FASTUINT,
+  UCHAR,
   FLOAT,
   FASTFLOAT,
   ANGLE,
@@ -21,6 +22,14 @@ typedef struct {
 static int menu_position = 0;
 
 float lerp(float a, float b, float t) { return a + (b - a) * t; }
+Color color_lerp(Color a, Color b, float t) {
+    Color result = {.r = 0, .g = 0, .b = 0, .a = 0};
+    result.r = (unsigned char)lerp(a.r, b.r, t);
+    result.g = (unsigned char)lerp(a.g, b.g, t);
+    result.b = (unsigned char)lerp(a.b, b.b, t);
+    result.a = (unsigned char)lerp(a.a, b.a, t);
+    return result;
+}
 
 int predicted_line_count(int child_gens, int splits) {
   int result = 0;
@@ -31,13 +40,13 @@ int predicted_line_count(int child_gens, int splits) {
 }
 
 void create_branch(Vector2 origin, int child_gens, int splits, float direction,
-                   float length, float spread, float length_decay, float sway) {
+                   float length, float spread, float decay, float sway, Color col, Color target_col) {
   direction += sin(time + (child_gens)) * sway;
   Vector2 end_position = {
       .x = origin.x + cos(direction) * length,
       .y = origin.y + sin(direction) * length,
   };
-  DrawLineV(origin, end_position, WHITE);
+  DrawLineV(origin, end_position, col);
 
   if (child_gens > 0) {
     for (int i = 0; i < splits; i++) {
@@ -47,7 +56,7 @@ void create_branch(Vector2 origin, int child_gens, int splits, float direction,
               : direction - spread +
                     (lerp(0, spread * 2, (float)i / (float)(splits - 1)));
       create_branch(end_position, child_gens - 1, splits, new_dir,
-                    length * length_decay, spread, length_decay, sway);
+                    length * decay, spread, decay, sway, color_lerp(col, target_col, 1.0 / (child_gens + 1)), target_col);
     }
   }
 }
@@ -111,6 +120,20 @@ void execute_menu_behavior(MenuItem menu[], int length) {
       *(int *)menu[menu_position].data += 1;
     }
     break;
+  case UCHAR:
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT) ||
+        (mouse_v == -1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
+      if (*(unsigned char *)menu[menu_position].data > 0) {
+        *(unsigned char *)menu[menu_position].data -= 1;
+      }
+    }
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT) ||
+        (mouse_v == 1 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))) {
+      if (*(unsigned char *)menu[menu_position].data < 255) {
+        *(unsigned char *)menu[menu_position].data += 1;
+      }
+    }
+    break;
   case FLOAT:
     if (IsKeyPressed(KEY_LEFT) ||
         (mouse_v == -1 && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))) {
@@ -149,6 +172,9 @@ void execute_menu_behavior(MenuItem menu[], int length) {
     case FASTUINT:
       sprintf(menu[i].value, "%d", *(int *)menu[i].data);
       break;
+    case UCHAR:
+      sprintf(menu[i].value, "%d", *(unsigned char *)menu[i].data);
+      break;
     case FLOAT:
     case FASTFLOAT:
       sprintf(menu[i].value, "%.2f", *(float *)menu[i].data);
@@ -171,6 +197,8 @@ int main() {
   float spread = PI / 3;
   float decay = 0.5;
   float sway = 0.05;
+  Color start_color = {255, 255, 255, 255};
+  Color end_color = {127, 127, 127, 255};
 
   MenuItem menu[] = {
       {.text = "Child Generations", .hint = UINT, .data = &child_gens},
@@ -180,6 +208,12 @@ int main() {
       {.text = "Direction", .hint = ANGLE, .data = &direction},
       {.text = "Spread", .hint = ANGLE, .data = &spread},
       {.text = "Sway", .hint = FLOAT, .data = &sway},
+      {.text = "Start Color R", .hint = UCHAR, .data = &start_color.r},
+      {.text = "Start Color G", .hint = UCHAR, .data = &start_color.g},
+      {.text = "Start Color B", .hint = UCHAR, .data = &start_color.b},
+      {.text = "End Color R", .hint = UCHAR, .data = &end_color.r},
+      {.text = "End Color G", .hint = UCHAR, .data = &end_color.g},
+      {.text = "End Color B", .hint = UCHAR, .data = &end_color.b},
   };
   int menu_length = sizeof(menu) / sizeof(menu[0]);
 
@@ -194,7 +228,7 @@ int main() {
         .y = GetScreenHeight(),
     };
     create_branch(origin, child_gens, splits, direction, length, spread, decay,
-                  sway);
+                  sway, start_color, end_color);
 
     execute_menu_behavior(menu, menu_length);
     draw_menu(menu, menu_length);
