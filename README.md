@@ -22,3 +22,4 @@ I have published some of these to my website, they run on your browser, so you d
 
 - [branch](https://racc.at/games/branch)
 - [tree](https://racc.at/games/tree)
+- [waves](https://racc.at/games/waves)
