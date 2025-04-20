@@ -10,7 +10,8 @@
         pkgs = nixpkgs.legacyPackages.${system};
         deps = with pkgs; [
             pkg-config
-            clangStdenv
+            libclang.lib
+            clang
             raylib
 
             libGL
@@ -23,10 +24,12 @@
             xorg.libXi
         ];
     in {
-        devShells.${system}.default = pkgs.mkShell {
+        devShells.${system}.default = pkgs.mkShell.override {stdenv = pkgs.clangStdenv;} {
+            nativeBuildInputs = deps;
             buildInputs = deps;
 
             LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath deps;
+            LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
         };
     };
 }
