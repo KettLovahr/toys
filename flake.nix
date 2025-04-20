@@ -10,7 +10,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
         deps = with pkgs; [
             pkg-config
-            clang
+            clangStdenv
             raylib
 
             libGL
