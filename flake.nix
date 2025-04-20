@@ -11,6 +11,7 @@
         deps = with pkgs; [
             pkg-config
             libclang.lib
+            clang-tools
             clang
             raylib
 
