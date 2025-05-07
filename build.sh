@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd $(dirname $0) | exit
 
@@ -12,7 +12,7 @@ list() {
 build_linux() {
     if [ -f "src/$1.c" ]; then
         mkdir -p "exports/linux/$1"
-        clang -o "exports/linux/$1/$1" "src/$1.c" -target "x86_64-linux-gnu" -Llib -Iinclude -lm -l:libraylib.a
+        clang -o "exports/linux/$1/$1" "src/$1.c" -target "x86_64-linux-gnu" -Llib -Iinclude -lm -l:libraylib.a -Wall -Werror
     else
         echo "[ERROR] $(tput setaf 9)$1.c$(tput setaf op) does not exist. Did you get something wrong?"
         exit 1
@@ -32,9 +32,6 @@ build_windows() {
 
 build_web() {
     if [ -f "src/$1.c" ]; then
-        "$HOME/emsdk/emsdk" activate latest
-        source "$HOME/emsdk/emsdk_env.sh"
-
         mkdir -p "exports/web/$1"
         emcc -o "exports/web/$1/index.html" "src/$1.c" -Llib/ -Iinclude/ -s USE_GLFW=3 -s ASYNCIFY=1 lib/libraylibweb.a --shell-file "res/customshell.html" -DPLATFORM_WEB
     else
